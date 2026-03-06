@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
+import java.util.UUID
 
 class UserService {
     fun insertUser(email: String, password: String) {
@@ -60,6 +61,22 @@ class UserService {
         return transaction {
             Users
                 .select { Users.email eq email }
+                .singleOrNull()
+                ?.let {
+                    UserDTO(
+                        id = it[Users.id],
+                        email = it[Users.email],
+                        password = it[Users.password],
+                        creationDate = it[Users.creationDate]
+                    )
+                }
+        }
+    }
+
+    fun findById(id: UUID): UserDTO? {
+        return transaction {
+            Users
+                .select { Users.id eq id }
                 .singleOrNull()
                 ?.let {
                     UserDTO(

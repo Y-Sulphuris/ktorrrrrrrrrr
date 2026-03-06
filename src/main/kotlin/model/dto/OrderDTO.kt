@@ -6,6 +6,6 @@ import java.util.UUID
 
 data class OrderDTO(val id: UUID, val userId: UUID, val creationDate: LocalDateTime) {
     fun getUser(users: UserService) : UserDTO {
-        TODO()
+        return users.findById(userId)!!
     }
 }

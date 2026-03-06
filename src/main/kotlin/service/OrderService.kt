@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
+import java.util.UUID
 
 class OrderService {
     fun insertOrder(user: UserDTO) {
@@ -49,9 +50,9 @@ class OrderService {
         }
     }
 
-    fun deleteOrder(order: OrderDTO) {
+    fun deleteOrder(orderId: UUID) {
         return transaction {
-            Orders.deleteWhere { Orders.id eq order.id } > 0
+            Orders.deleteWhere { Orders.id eq orderId } > 0
         }
     }
 }
