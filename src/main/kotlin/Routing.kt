@@ -21,10 +21,35 @@ fun Application.configureRouting() {
             }
         }
         route("products") {
+            get {
 
+            }
+            get("products/{id}") {
+
+            }
+        }
+        route("orders") {
+            post {
+
+            }
+            get {
+
+            }
+            delete("{id}") {
+
+            }
         }
         get("/") {
             call.respondText("Hello World!")
         }
     }
 }
+
+/*
+    users
+    products
+    orders
+    order_items
+    audit_logs
+
+ */

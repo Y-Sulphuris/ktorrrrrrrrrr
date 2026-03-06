@@ -5,10 +5,10 @@ import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.LocalDateTime
 
 object Products : Table() {
-    val id = integer("id").autoIncrement()
-    val name = varchar("name", 255)
+    val id = uuid("id").autoIncrement()
+    val name = text("name")
     val description = text("description")
-    val price = decimal("price", 10, 2)
+    val price = integer("price")
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 
     override val primaryKey = PrimaryKey(id)
