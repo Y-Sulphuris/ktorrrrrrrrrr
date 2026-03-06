@@ -5,6 +5,7 @@ import com.example.model.dto.UserDTO
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -52,6 +53,22 @@ class UserService {
     fun deleteUser(user: UserDTO) {
         return transaction {
             Users.deleteWhere { Users.id eq user.id } > 0
+        }
+    }
+
+    fun findByEmail(email: String): UserDTO? {
+        return transaction {
+            Users
+                .select { Users.email eq email }
+                .singleOrNull()
+                ?.let {
+                    UserDTO(
+                        id = it[Users.id],
+                        email = it[Users.email],
+                        password = it[Users.password],
+                        creationDate = it[Users.creationDate]
+                    )
+                }
         }
     }
 }
