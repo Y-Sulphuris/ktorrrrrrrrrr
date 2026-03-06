@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.update
+import java.util.UUID
 
 class ProductService {
     private val ttlSeconds = 600L
@@ -109,6 +110,46 @@ class ProductService {
         }
         val redis = RedisClientProvider.commands()
         redis.del("product:${product.id}")
+    }
+
+    fun get(productId: UUID) : ProductDTO? {
+        return transaction {
+            Products.select { Products.id eq productId }
+                .mapNotNull {
+                    ProductDTO(
+                        id = it[Products.id],
+                        name = it[Products.name],
+                        description = it[Products.description],
+                        price = it[Products.price],
+                        stock = it[Products.stock],
+                        creationDate = it[Products.createdAt]
+                    )
+                }
+                .singleOrNull()
+        }
+    }
+
+    fun findProductById(productId: UUID) : ProductResponse? {
+        return transaction {
+            Products.select { Products.id eq productId }
+                .mapNotNull {
+                    ProductResponse(
+                        id = it[Products.id].toString(),
+                        name = it[Products.name],
+                        description = it[Products.description],
+                        price = it[Products.price],
+                        createdAt = it[Products.createdAt].toString()
+                    )
+                }
+                .singleOrNull()
+        }
+    }
+
+    fun decreaseStock(productId: UUID, count: Int) {
+        var product: ProductDTO = get(productId)!!;
+        product = ProductDTO(product.id, product.name, product.description, product.price, product.stock - count, product.creationDate)
+        if (product.stock <= 0) throw IllegalArgumentException("Negative stock")
+        updateProduct(product)
     }
 }
 

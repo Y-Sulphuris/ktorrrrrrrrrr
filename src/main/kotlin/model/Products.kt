@@ -9,6 +9,7 @@ object Products : Table() {
     val name = text("name")
     val description = text("description")
     val price = integer("price")
+    val stock = integer("stock")
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 
     override val primaryKey = PrimaryKey(id)

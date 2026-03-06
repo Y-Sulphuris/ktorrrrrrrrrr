@@ -11,12 +11,14 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.UUID
 import com.example.cache.RedisClientProvider
 
 
@@ -30,12 +32,12 @@ fun Application.module() {
     environment.monitor.subscribe(ApplicationStopped) {
         RedisClientProvider.shutdown()
     }
-
     configureSerialization()
     configureHTTP()
     configureSecurity()
     configureRouting()
     configureDatabase()
+    startEmailWorker()
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -65,3 +67,14 @@ private fun Application.configureDatabase() {
         }
     }
 }
+@Serializable
+data class CreateOrderRequest(
+    val userId: String,
+    val items: List<OrderItemRequest>
+)
+
+@Serializable
+data class OrderItemRequest(
+    val productId: String,
+    val count: Int
+)
