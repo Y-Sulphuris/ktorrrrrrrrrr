@@ -9,6 +9,8 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.swagger.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.util.UUID
+import kotlin.uuid.Uuid
 
 fun Application.configureSecurity() {
     // Please read the jwt property from the config file if you are using EngineMain
@@ -32,3 +34,4 @@ fun Application.configureSecurity() {
         }
     }
 }
+

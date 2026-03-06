@@ -7,8 +7,8 @@ import java.util.UUID
 
 object Users : Table() {
     val id = uuid("id").autoIncrement()
-    val name = varchar("email", 32).uniqueIndex()
-    val email = varchar("password", 255)
+    val email = varchar("email", 32).uniqueIndex()
+    val password = varchar("password", 255)
     val creationDate = datetime("creation_date").default(LocalDateTime.now())
 
     override val primaryKey = PrimaryKey(id)
