@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.LocalDateTime
 
 object Products : Table() {
-    val id = uuid("id").autoIncrement()
+    val id = uuid("id").autoGenerate()
     val name = text("name")
     val description = text("description")
     val price = integer("price")

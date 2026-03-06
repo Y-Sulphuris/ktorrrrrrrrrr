@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 object Users : Table() {
-    val id = uuid("id").autoIncrement()
+    val id = uuid("id").autoGenerate()
     val email = varchar("email", 32).uniqueIndex()
     val password = varchar("password", 255)
     val creationDate = datetime("creation_date").default(LocalDateTime.now())

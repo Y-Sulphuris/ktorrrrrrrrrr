@@ -2,6 +2,13 @@ package com.example
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.example.model.AuditLogs
+import com.example.model.OrderItems
+import com.example.model.Orders
+import com.example.model.Products
+import com.example.model.Users
+import com.example.model.Users.email
+import com.example.model.Users.password
 import com.example.model.dto.UserDTO
 import com.example.service.OrderService
 import com.example.service.ProductService
@@ -15,6 +22,11 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun Application.configureRouting() {
@@ -85,12 +97,3 @@ fun Application.configureRouting() {
         }
     }
 }
-
-/*
-    users
-    products
-    orders
-    order_items
-    audit_logs
-
- */
