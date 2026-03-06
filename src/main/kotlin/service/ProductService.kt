@@ -3,6 +3,7 @@ package com.example.service
 import com.example.model.Products
 import com.example.model.dto.ProductDTO
 import kotlinx.serialization.Serializable
+import com.example.cache.RedisClientProvider
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -13,6 +14,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.update
 
 class ProductService {
+    private val ttlSeconds = 600L
     fun insertProduct(name: String, description: String, price: Int) {
         val creationDate = LocalDateTime.now();
         transaction {
@@ -54,19 +56,59 @@ class ProductService {
     }
 
     fun updateProduct(product: ProductDTO) {
-        return transaction {
+        transaction {
             Products.update({ Products.id eq product.id }) {
                 it[Products.name] = product.name;
                 it[Products.description] = product.description;
                 it[Products.price] = product.price;
             }
         }
+        val redis = RedisClientProvider.commands()
+        redis.del("product:${product.id}")
+    }
+
+    fun getProductById(id: String): ProductResponse? {
+        val redis = RedisClientProvider.commands()
+        val cacheKey = "product:$id"
+
+        val cached = redis.get(cacheKey)
+        if (cached != null) {
+            val parts = cached.split("|")
+            return ProductResponse(
+                id = parts[0],
+                name = parts[1],
+                description = parts[2],
+                price = parts[3].toInt(),
+                createdAt = parts[4]
+            )
+        }
+
+        val product = transaction {
+            Products.selectAll().map {
+                ProductResponse(
+                    id = it[Products.id].toString(),
+                    name = it[Products.name],
+                    description = it[Products.description],
+                    price = it[Products.price],
+                    createdAt = it[Products.createdAt].toString()
+                )
+            }.find { it.id == id }
+        }
+
+        if (product != null) {
+            val value = "${product.id}|${product.name}|${product.description}|${product.price}|${product.createdAt}"
+            redis.setex(cacheKey, ttlSeconds, value)
+        }
+
+        return product
     }
 
     fun deleteProduct(product: ProductDTO) {
-        return transaction {
+             transaction {
             Products.deleteWhere { Products.id eq product.id } > 0
         }
+        val redis = RedisClientProvider.commands()
+        redis.del("product:${product.id}")
     }
 }
 

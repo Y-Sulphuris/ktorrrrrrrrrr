@@ -8,3 +8,8 @@ jwt:
   domain: "https://jwt-provider-domain/"
   audience: "jwt-audience"
   realm: "ktor sample app"
+
+redis:
+  host: "localhost"
+  port: 6379
+  ttl-seconds: 600

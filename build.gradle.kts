@@ -63,6 +63,8 @@ dependencies {
 
     // JWT
     implementation("com.auth0:java-jwt:4.4.0")
+    // Redis
+    implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:$logback_version")

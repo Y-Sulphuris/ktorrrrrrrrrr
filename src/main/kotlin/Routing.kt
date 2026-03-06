@@ -56,10 +56,17 @@ fun Application.configureRouting() {
         }
         route("products") {
             get {
-
+                call.respond(productService.getAllProducts())
             }
-            get("products/{id}") {
 
+            get("{id}") {
+                val id = call.parameters["id"]
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing product id")
+
+                val product = productService.getProductById(id)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, "Product not found")
+
+                call.respond(product)
             }
         }
         route("orders") {
