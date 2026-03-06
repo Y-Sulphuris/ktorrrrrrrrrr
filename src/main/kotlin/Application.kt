@@ -53,19 +53,23 @@ private fun Application.configureSerialization() {
 }
 
 private fun Application.configureDatabase() {
-    Database.connect("jdbc:sqlite:data.db", driver = "org.sqlite.JDBC")
+    val dbPath = System.getenv("SQLITE_DB_PATH") ?: "data.db"
+    Database.connect("jdbc:sqlite:$dbPath", driver = "org.sqlite.JDBC")
 
     transaction {
         SchemaUtils.create(Users, Orders, Products, OrderItems, AuditLogs)
 
         if (Users.selectAll().empty()) {
-            val hashedPassword = at.favre.lib.crypto.bcrypt.BCrypt.withDefaults().hashToString(12, "admin".toCharArray())
+            val hashedPassword = at.favre.lib.crypto.bcrypt.BCrypt.withDefaults()
+                .hashToString(12, "admin".toCharArray())
+
             Users.insert {
                 it[email] = "admin@example.com"
                 it[password] = hashedPassword
             }
         }
     }
+}
 }
 @Serializable
 data class CreateOrderRequest(

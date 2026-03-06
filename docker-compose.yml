@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ktor_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SQLITE_DB_PATH: /app/data/data.db
+    volumes:
+      - sqlite_data:/app/data
+
+  redis:
+    image: redis:7
+    container_name: shop_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  sqlite_data:
